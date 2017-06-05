@@ -7,11 +7,14 @@ output: word_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
-library(dplyr)
-library(pander)
-library(cowplot)
-library(knitr)
+library(ggplot2) # graphics
+library(dplyr) # data wrangling
+library(cowplot) #plot grids
+library(knitr) # fancy tables
+library(GGally) # scatterplot matrices
+library(tree) # regression trees
+library(rpart) #classification trees
+
 seattle<-read.csv('Airbnb_Seattle.csv')
 currency_to_numeric <- function(x){
   # Convert currencies to numeric i.e. strip dollar signs and commas
@@ -262,11 +265,11 @@ seattle1<-seattle %>% select(number_of_reviews, price)
 ggplot(seattle1, aes(x = number_of_reviews, y = price )) + geom_point() + 
   geom_smooth(method = 'lm')
 m<-lm(price~number_of_reviews, data = seattle1)
-pander(summary(m))
+#pander(summary(m))
 
 ggplot(seattle1, aes(x = number_of_reviews, y = rstandard(m) )) + geom_point() + 
   geom_smooth(method = 'lm')
-pander(summary(m))
+#pander(summary(m))
 
 ```
 
@@ -286,6 +289,79 @@ What variables in this data set do you think would be the most useful in predict
 
 <!--… multiple regression … I think we should try to predict the price of a rental unit based on the variables accommodates + beds + bathrooms +guests_included+ review_scores_rating+QA(dummy variable for Queen Anne nbd) + BTown(dummy variable for Belltown nbd)+CH(dummy variable for Capitol Hill nbd).  We try to decide which variables should count for most.  I would like to include a scatterplot matrix here. -->
 
+```{r, echo = F, eval = F}
+seattle1<-seattle %>% select(price, accommodates, beds, bathrooms,
+                            guests_included,review_scores_rating, neighbourhood_cleansed)
+
+#What are the most popular neighbourhoods? 
+seattle1 %>% group_by(neighbourhood_cleansed) %>% tally() %>% arrange(desc(n))
+
+nbd_list<-c('Broadway', 'Wallingford', 'Belltown')
+seattle1<-seattle1 %>% filter(neighbourhood_cleansed %in% nbd_list)
+
+#Let's look at how these variables relate to each other: 
+ggpairs(seattle1, cardinality_threshold = 90)
+
+#It looks like price is correlated with accomodates, beds, and baths ... but these are also correlated with each other! Does it seem to be related to neighbourhood? 
+
+seattle1 %>% group_by(neighbourhood_cleansed) %>% summarise(mean = mean(price), median = median(price))
+#Belltown seems to cost more than the other two.  Let's create a dummy variable for Belltown. 
+
+seattle1<- seattle1 %>% mutate(BT=ifelse(neighbourhood_cleansed=='Belltown',1,0))
+
+#================== Use Multiple Regression =====================
+
+m1<-lm(price~ accommodates+beds+bathrooms +guests_included+review_scores_rating+BT, data = seattle1 )
+summary(m1)
+
+#At first glance it appears that we can explain about 43% of the variation in price using these variables, and the ones that seem to contribute the most are 'accomodates', 'bathrooms, 'guests_included', and 'BT' (perhaps, in that order).  But... does it seem weird to you that 'beds' is not in this list? Can you explain why it's not? There are many ways to decide which variables to include (like stepwise regression, or contextual knowledge of the problem).  Let's naively just take the ones I mentioned above: 
+
+seattle2<-seattle1 %>% select(price, accommodates, bathrooms, guests_included, BT)
+seattle2<-na.omit(seattle2)
+m2<-lm(price~ accommodates+bathrooms +guests_included+BT, data = seattle2 )
+summary(m2)
+stres<-rstandard(m2)
+#Interestingly, we can now explain something like 47% of the variation in price, suggesting some of the variables we dropped were maybe acting like red herrings!  If we choose to accept this model (which, by the way, we shouldn't -- at least not until we assess its validity!), a practical description of the model would be: 
+
+#An (empty) rental costs $0. 
+# - For every person the rental accomodates, add $25.65 to the price
+# - For every bathroom in the rental, add $35.69 to the price
+# - For each guest included, add $7.27 o the rental price
+# - If the rental is in BellTown, add $19 to the price
+
+#Assess validity of model: Do the residuals appear to be normally distributed? 
+p1<-ggplot(seattle2, aes(x = accommodates, y = rstandard(m2))) + geom_point(shape = 1)
+p2<-ggplot(seattle2, aes(x = bathrooms, y = rstandard(m2))) + geom_point(shape = 1)
+p3<-ggplot(seattle2, aes(x = guests_included, y = rstandard(m2))) + geom_point(shape = 1)
+p4<-ggplot(seattle2, aes(x = lm.influence(m2)$hat, y = rstandard(m2))) + 
+  geom_point(shape = 1) + 
+  geom_vline(xintercept = 2*(5)/length(stres), color = 'cyan')+ 
+  geom_hline(yintercept = -4, color = 'red')+ 
+  geom_hline(yintercept = 4, color = 'red')
+plot_grid(p1,p2,p3,p4)
+ggplot(seattle2, aes(x = fitted(m2), y = price)) + geom_point(shape = 1)
+
+#While there is no recognizable nonlinear shape in these residual plots, we do have a number of 'outlier + leverage' points that could be skewing things for us.  Also, the variation of residuals appears to be growing as accomodates/bathroom get larger. So, this model has some problems. 
+
+#==================Use A Regression Tree=====================
+
+#The following code produces a regression tree for this problem:
+t<-tree(price~ accommodates+beds+bathrooms +guests_included+review_scores_rating+BT, data = seattle1 )
+t
+plot(t)
+text(t)
+
+#It appears that the most important variable in the data is 'accomodates'.  
+#If you just want to split the data into two groups, you should look to see if the renatl accomodates 8 or more people.  If so, the average price would be $390, if not the average price would be $125.  
+#For the rentals which accomodate less than 8 people, the next break occurs depending on if he rental accomodates four or more people (average price $163.10) or not (average price $102.20). #The next break occurs in the rentals that accommodate more than 8 people: rentals in Belltown (average price $539) or not (average price $342.70).
+
+#We can keep following the 'breaks' in this regression tree until a good 'cut-off point'.  Finding the right cut-off point is an interesting problem which you should learn more about.  
+# Further Questions: 
+#1 - Can you interpret the meaning behind all of the breaks? 
+#2 - Does the regression tree change your mind about which variables (in which cases) are practically significant? 
+#3 - Which model do you think is better?
+
+```
 
 
 ### Exploration #7: 
@@ -295,11 +371,103 @@ What variables in this data set do you think would be the most useful to you?  T
 
 <!--… logistic regression … I think we should try to model the probability that a rental is an ‘entire house’-type rental based on either the price or the number of beds (or the # of people the rental accommodates?).  Below is an example graphic.-->
 
+```{r, eval = F, echo = F}
+#================== Use Multiple Logistic Regression =====================
+
+seattle1<-seattle %>% select(room_type, price, accommodates, beds, bathrooms,
+                            guests_included,review_scores_rating, neighbourhood_cleansed)
+seattle1<- seattle1 %>% filter(room_type != 'Shared room')
+seattle1<- seattle1 %>% mutate(Home = ifelse(room_type == 'Private room', 0, 1))
+
+#Which neighborhoods have more Private rentals? 
+seattle1 %>% group_by(neighbourhood_cleansed) %>% summarize(p = mean(Private))%>%
+  arrange(p)
+
+#Suppose we only use price to predict whether a rental is a private room (instead of an entire house)
+
+
+m1<-glm(Home~ price, family = binomial, data = seattle1 )
+c<-coefficients(m1)
+
+f<-function(x){1/(1 + exp(-c[[1]] -c[[2]]*x))}
+
+seattlebinned<-seattle1 %>% mutate(pricebin = cut(price, breaks = 20*0:100, labels = 20*0.5:99.5))
+seattleb<-seattlebinned %>% group_by(pricebin) %>% summarise(p = mean(Home))
+ggplot(seattleb, aes(x = currency_to_numeric(pricebin), y = p)) + geom_point()+
+  stat_function(fun = f, color = 'blue') + xlab('Price')+xlim(0,500)
+#The graphic deomonstrates that an increase of price is linked to an increased likelihood that the rental is an entire home. 
+
+
+summary(m1)
+#The summary tells us that we estimate that the odds of a house being an entire home go up by .04 for every additional dollar in the price of the rental. 
+
+#How well does this logistic regression do as a predictor? 
+library(mclust)
+seattle1<- seattle1 %>% mutate(Predict = ifelse(fitted(m1)>.5, 1, 0))
+classError(seattle1$Home,seattle1$Predict )
+#The classError function above tells us that our prediction gives us a 16% error rate. 
+
+# Let's try adding more variables: 
+
+seattle2<-na.omit(seattle1)
+m2<-glm(Home~ accommodates+beds+bathrooms +guests_included+review_scores_rating + price, family = binomial, data = seattle2 )
+summary(m2)
+
+
+m3<-glm(Home~ accommodates+bathrooms +review_scores_rating + price, family = binomial, data = seattle2 )
+summary(m3)
+
+
+seattle2<- seattle2 %>% mutate(Predict = ifelse(fitted(m3)>.5, 1, 0))
+classError(seattle2$Home,seattle2$Predict )
+#New error rate: 13%.  Not that much better? 
+
+#================== Use Classification Tree =====================
+
+t<-rpart(Home~ accommodates+beds+bathrooms +guests_included+review_scores_rating + price, 
+         data = seattle2 )
+t
+plot(t, compress = TRUE)
+text(t, use.n = TRUE)
+
+#Fix plot and add interpretation
+
+```
+
+
 ### Exploration #8: 
 
 Can you use the data to predict which neighborhood a rental is in based on other characteristics in the data?  Pick three of four neighborhoods which contain "many" rentals and keep only data from these neighborhoods.  Can you build a model (maybe hierarchical clustering, k-means, k-nearest neighbors, support vector classifiers, or something else) which can predict which neighborhood you're in, based on certain *important* variables? Which variables do you think you should use?  Do you think using `latitude` and/or `longitude` is like cheating?    How well does your model work?
 
+```{r, eval = F, echo = F}
 
+seattle1<-seattle %>% select(room_type, price, accommodates, beds, bathrooms,
+                            guests_included ,review_scores_rating,
+                            neighbourhood_cleansed,latitude, longitude)
+#Which nbds should we pick
+seattle1 %>% group_by(neighbourhood_cleansed) %>% tally() %>% arrange(desc(n))
+#Howabout: 
+nbd_list<-c('Broadway', 'Belltown', 'Wallingford', 'University District', 'Minor')
+seattle1<-seattle1 %>% filter(neighbourhood_cleansed %in% nbd_list)
+ggplot(seattle1, aes(x = longitude, y = latitude, color = neighbourhood_cleansed)) + 
+  geom_point()
+
+seattle1 %>% tbl_df()
+
+clusters<-seattle1 %>%
+  mutate(Home = ifelse(room_type == 'Entire home/apt',1,0)) %>%
+  select(-neighbourhood_cleansed,-room_type)
+
+clusters<-na.omit(clusters)
+km<-kmeans(cbind(clusters[,7:8]),5)
+clusters<-clusters %>% mutate(Predict = km$cluster)
+
+ggplot(clusters, aes(x = longitude, y = latitude, color = as.factor(Predict))) + 
+  geom_point()
+
+#Still need to play around with variables.  Or, just give up and use latitude and longitude only...
+
+```
 
 ##Conclusions
 The Insideairbnb data set is robust enough that anyone with statistical training, no matter the sophistication, can ask meaningful and challenging questions.  In recent times the field of data science, along with the associated mathematical tools, has become a successful and popular way to analyze data sets of this type. If you want to learn morea bout exploring and using data for analysis and predictions there are starter courses on the web (e.g., Coursera and DataCamp) and many universities and colleges around the world are implementing Data Science programs.  Most importantly, as you may have found from the last three exercises, the level of mathematical sophistication associated with data analysis can be quite high, so if you are a student reading this article and you find the ideas interesting then we recommend taking courses in statistics, computer science and computational mathematics.
