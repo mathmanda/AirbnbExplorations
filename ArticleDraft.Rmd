@@ -424,7 +424,7 @@ text(t, use.n = TRUE)
 
 
 ### Exploration #8: 
-Can you use the data to predict which neighborhood a rental is in based on other characteristics in the data?  Pick three or four neighborhoods which contain "many" rentals and keep only data from these neighborhoods.  Can you build a model (maybe hierarchical clustering, k-nearest neighbors, support vector classifiers, or something else) which can predict which neighborhood you're in, based on certain *important* variables? Which variables do you think you should use?  Do you think using `latitude` and/or `longitude` is like cheating?    How well does your model work?
+Can you use the data to predict which neighborhood a rental is in based on other characteristics in the data?  Pick three or four neighborhoods which contain "many" rentals and keep only data from these neighborhoods.  Can you build a model (maybe hierarchical clustering, k-means, or something else) which can predict which neighborhood you're in, based on certain *important* variables? Which variables do you think you should use?  Do you think using `latitude` and/or `longitude` is like cheating?    How well does your model work?
 
 ```{r, eval = F, echo = F}
 
@@ -446,7 +446,7 @@ clusters<-seattle1 %>%
   select(-neighbourhood_cleansed,-room_type)
 
 clusters<-na.omit(clusters)
-km<-kmeans(cbind(clusters[,7:8]),5)
+km<-kmeans(cbind(clusters[,1:8]),5)
 clusters<-clusters %>% mutate(Predict = km$cluster)
 
 ggplot(clusters, aes(x = longitude, y = latitude, color = as.factor(Predict))) + 
