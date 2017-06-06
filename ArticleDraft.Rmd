@@ -26,19 +26,13 @@ currency_to_numeric <- function(x){
 seattle<-seattle %>% mutate(price = currency_to_numeric(price))
 ```
 
-<!--##Introduction
-I THINK WE DON'T NEED THIS?  LET'S JUST JUMP RIGHT IN
-… Amanda’s introduction …
-
-… throughout this article we will propose several explorations for the reader to enjoy. …
--->
 
 ## Airbnb
-We have all likely experience the traveler’s dilemma: I want to travel cheaply so that my trip can last longer, but the cost of lodging is prohibitively high.  In 2008 the San Francisco based company Airbnb changed the nature of finding lodging by creating “ … a trusted community marketplace for people to list, discover, and book unique accommodations around the world”.  In their words:  “whether an apartment for a night, a castle for a week, or a villa for a month, Airbnb connects people to unique travel experiences, at any price point, in more than 65,000 cities and 191 countries” (www.airbnb.com). 
+We have all likely experienced the traveler’s dilemma: I want to travel cheaply so that my trip can last longer, but the cost of lodging is prohibitively high.  In 2008 the San Francisco based company Airbnb changed the nature of finding lodging and provided an alternative to traditional hotels by creating “ … a trusted community marketplace for people to list, discover, and book unique accommodations around the world”.  In their words:  “whether an apartment for a night, a castle for a week, or a villa for a month, Airbnb connects people to unique travel experiences, at any price point, in more than 65,000 cities and 191 countries” (www.airbnb.com). 
 
 As Airbnb has grown in popularity a wealth of data has been accumulated about many aspects of the Airbnb experience. One particular independent website, insideairbnb.com, has developed “ … a set of tools and data that allows you to explore how Airbnb is really being used in cities around the world.”  Insideairbnb has gathered public data from Airbnb sites around the world and as mathematicians and statisticians this provides us with a treasure trove of questions to explore!  They have data on cities like Paris, Venice, Amsterdam, Boston, Chicago, Seattle, and many more.  Their data sets include factors such as average reviews, locations, cleaning costs, rent, and much more.  
 
-What follows are a collection of explorations that you can try out along with us.  After each exploration we’ll give some of our own thoughts,discussion, and visualization.  We encourage the reader to head over to insideairbnb.com, find some interesting data, and start exploring.
+What follows are a collection of explorations that you can try out along with us.  After each exploration we’ll give some of our own thoughts, discussion, and visualization.  We encourage the reader to head over to insideairbnb.com, find some interesting data, and start exploring.
 
 ### Exploration #1: 
 Go to insideairbnb.com now and find a data set for the city of your choice.  Spend a few minutes exploring the data set and propose several questions.  When you press “Get the Data” on insideairbnb.com and find your city you will see a link “see data visually here”.  Spend some time exploring their visual aids.
@@ -53,7 +47,7 @@ We are located somewhat near Seattle, so for the purposes of discussion we’ll 
 
 
 ### Exploration #2: 
-You’re trying to budget your travel money.  In what range of daily prices would you expect the average daily price for a private room at an Airbnb in a particular neighborhood to land?  **This data isn't normally distributed, so we need to be careful giving confidence intervals for single instances...**
+You’re trying to budget your travel money.  In what range of daily prices would you expect the average daily price for a private room at an Airbnb in a particular neighborhood to land?  <!-- **This data isn't normally distributed, so we need to be careful giving confidence intervals for single instances...** -->
 
 **Discussion:** There is a beautiful beach on the Puget Sound in the Alki neighborhood of Seattle.  Let's filter the data to explore the prices from the Alki beach area.  We'll start with some basic descriptive statistics: the average rental price there is $170 but the standard deviation is $97!  The question in this exploration is really asking for a range of prices, and based on the rather large standard deviation, the estimation range will have a rather large range as well.  If this data were normally distributed we would expect *most* of the rentals (~68% of them) to be withing one standard deviation of the mean: between $73 and $267. <!--We expect the price for a rental in the Alkai neighborhood to be somewhere between $140 and $201.  In fact, a 95% confidence interval for the average price in this neighborhood is between $8 and $355!-->  The large variance in the prices leads us to believe that there is more going on here.  Let's create a data visualization to investigate further: 
 ```{r, echo = F,fig.height = 2,fig.width = 5}
@@ -82,8 +76,8 @@ The plot above is called a violin plot.  The curved shape tells us where 'cluste
 ### Exploration #3:  
 Do you wonder if hosts with cleaner rentals charge more?  How about a more specific question:  is there a statistical difference in daily price between the rentals that are rated most cleanly versus the rentals that are rated least cleanly?
 
-**Discussion:** <!--Since not every room in our data set has a cleanliness rating we have to do some data wrangling to remove these observations from consideration.  In doing so we realize that the sample sizes are wildly different: 81 rentals with lower cleanliness ratings and 3,166 with higher ratings.  Perhaps people are just too nice in their ratings or perhaps the Airbnb properties in Seattle are clean!-->
-The first order of business in this explanation is to decide what *most cleanly* and *least cleanly* mean to us.  The cleanliness rating scale goes from 0 to 10, but we shouldn't assume that cleanliness ratings are evenly distributed among these numbers, or that the numbers 0-10 represent a nice linear progression of cleanliness.  In fact, many travelers might feel guilty giving a low cleanliness rating, so we may expect the ratings to be artificially inflated. Having learned from our last exploration, this time let's look at a visualization of the data first.  How about a scatterplot of cleanliness rating versus price?  
+**Discussion:** 
+The first order of business in this exploration is to decide what *most cleanly* and *least cleanly* mean to us.  The cleanliness rating scale goes from 0 to 10, but we shouldn't assume that cleanliness ratings are evenly distributed among these numbers, or that the numbers 0-10 represent a linear progression of cleanliness.  In fact, many travelers might feel guilty giving a low cleanliness rating, so we may expect the ratings to be artificially inflated. Having learned from our last exploration, this time let's look at a visualization of the data first.  How about a scatterplot of cleanliness rating versus price?  
 
 ```{r, echo = F, fig.height=2, fig.width = 5 }
 seattle1<- seattle %>% 
@@ -130,7 +124,7 @@ ggplot(seattle1, aes(x = HiLo, y = price, fill = HiLo))+
   geom_violin()+geom_boxplot( width = .4)+coord_flip()+
   theme(legend.position = "none")+
   scale_y_log10() + 
-  xlab('Cleanliness Rating') + ylab('Price')+ggtitle('Log Scale')
+  xlab('Cleanliness Rating') + ylab('Price')+ggtitle('Price on a Log Scale')
 
 #ggplot(seattle1, aes(fill = HiLo, x = price))+stat_density()+
 #  scale_x_log10() + ylab('Cleanliness Rating') + xlab('Price')+ggtitle('Distribution #of Daily Prices for High and Low Cleanliness Ratings')
@@ -169,7 +163,7 @@ ggplot(seattle1, aes(x = host_neighbourhood, fill = cancellation_policy)) +
   ggtitle('Cancellation Policy in Two Neighborhoods')
 ```
 
-The visualization above shows us the distribution of cancellation policies in the two neighborhoods, and a statistical test on the difference of the  proportions of `strict policies` in each neighborhood gives us a p-value <!--much less than 0.001--> around .0004, and we  conclude that there is evidence to suggest that rentals in Belltown have a much stricter cancellation policy than those in Alki.  The safe bet seems to be Alki, but if we want to spend our social time in downtown we now need to consider the transportation costs.
+The visualization above shows us the distribution of cancellation policies in the two neighborhoods, and a statistical test on the difference of the  proportions of `strict policies` in each neighborhood gives us a p-value around .0004, and we  conclude that there is evidence to suggest that rentals in Belltown have a much stricter cancellation policy than those in Alki.  The safe bet seems to be Alki, but if we want to spend our social time in downtown we now need to consider the transportation costs.
 
 ```{r, include = F}
 # Difference of proportions test:
@@ -185,8 +179,6 @@ ppooled = (mytable1[[1,2]]+mytable1[[2,2]])/(mytable2[[1,2]]+mytable2[[2,2]])
 stderror = sqrt(ppooled*(1-ppooled)*(1/mytable2[[1,2]]+1/mytable2[[2,2]]))
 tstat = phatdiff/stderror
 2*pnorm(tstat)
-
-# The difference between our calculations is that Eric used neighborhood_cleansed and Amanda used host_neighborhood
 
 seattle1<-seattle %>% select(cancellation_policy, neighbourhood_cleansed)
 
@@ -208,7 +200,7 @@ phatdiff = p1hat - p2hat
 ppooled = (mytable1[[1,2]]+mytable1[[2,2]])/(mytable2[[1,2]]+mytable2[[2,2]])
 stderror = sqrt(ppooled*(1-ppooled)*(1/mytable2[[1,2]]+1/mytable2[[2,2]]))
 tstat = phatdiff/stderror
-2*pnorm(tstat)
+pvalue = 2*pnorm(tstat)
 
 #p-value = 9.214435e-05
 
@@ -217,7 +209,6 @@ tstat = phatdiff/stderror
 
 
 ### Exploration #5:
-
 Now I'm considering inviting some friends on my trip, but first I want to know: For each additional bed,  how much more should I expect a rental to cost? 
 
 
@@ -279,12 +270,10 @@ The question in Exploration #2 really asks to compare the mean daily prices of r
 
 
 ## Moving Beyond the Basics 
-
-In this section we pose more questions and leave the investigation open to you. If you would like to see how we answered these questions wth the Seattle data, you can visit our workfile at mathquest.carroll.edu.  Several of these exercises suggest more advanced techniques, such as multiple regression, logistic regression, or machine learning techniques to answer.
+In this section we pose more questions and leave the investigations open to you. If you would like to see how we answered these questions wth the Seattle data, you can visit our workfile at mathquest.carroll.edu/AirbnbExplorations/.  Several of these exercises suggest more advanced techniques, such as multiple regression, logistic regression, or machine learning techniques to answer.
 
 ###Exploration #6: 
-
-What variables in this data set do you think would be the most useful in predicting the price of a particular rental?  Try `accommodates`, `beds`, `bathrooms`, `guests_included`, `review_scores_rating`, and various neighborhoods, <!--`QA`, `BT`, and `CH` (where `QA`, `BT` and `CH` are dummy variable for the Queen Anne,  Belltown, and Capitol Hill neighborhoods)--> and see if you can build a model (maybe a multiple regression, regression tree, or artificial neural network) that is relatively good at predicting prices. A good idea would be to split your data into a training and test sets so that you can test your predictions on data that your model has not seen.  Which variables turn out to be the most important?  The least inportant?  Does this surprise you?  Are there any variables that amount to just 'noise' in this analysis?  How reliable do you think your model is?  Do you think this same model would work in other regions of the world?  Why or why not? Do you think it would be necessary to pre-process that data in any way? For example, do you think that it would be necessary to do a principal component analysis on your data first in order to reduce the dimension of the data set?  Do you think that the variables should be transformed in any way? Do you think any additional features should be included in your data (e.g. the square of a feature, the product of two features, etc)?
+What variables in this data set do you think would be the most useful in predicting the price of a particular rental?  Try `accommodates`, `beds`, `bathrooms`, `guests_included`, `review_scores_rating`, and various neighborhoods, and see if you can build a model (maybe a multiple regression, regression tree, or artificial neural network) that is *good* at predicting prices. A good idea would be to split your data into a training and test sets so that you can test your predictions on data that your model has not seen.  Which variables turn out to be the most important?  The least inportant?  Does this surprise you?  Are there any variables that amount to just 'noise' in this analysis?  How reliable do you think your model is?  Do you think this same model would work in other regions of the world?  Why or why not? Do you think it would be necessary to pre-process that data in any way? <!--For example, do you think that it would be necessary to do a principal component analysis on your data first in order to reduce the dimension of the data set?-->  Do you think that the variables should be transformed in any way? Do you think any additional features should be included in your data (e.g. the square of a feature, the product of two features, etc)?
 
 
 <!--… multiple regression … I think we should try to predict the price of a rental unit based on the variables accommodates + beds + bathrooms +guests_included+ review_scores_rating+QA(dummy variable for Queen Anne nbd) + BTown(dummy variable for Belltown nbd)+CH(dummy variable for Capitol Hill nbd).  We try to decide which variables should count for most.  I would like to include a scatterplot matrix here. -->
@@ -349,7 +338,7 @@ ggplot(seattle2, aes(x = fitted(m2), y = price)) + geom_point(shape = 1)
 t<-tree(price~ accommodates+beds+bathrooms +guests_included+review_scores_rating+BT, data = seattle1 )
 t
 plot(t)
-text(t)
+text(t) # *********** this line errors **************
 
 #It appears that the most important variable in the data is 'accomodates'.  
 #If you just want to split the data into two groups, you should look to see if the renatl accomodates 8 or more people.  If so, the average price would be $390, if not the average price would be $125.  
@@ -365,7 +354,6 @@ text(t)
 
 
 ### Exploration #7: 
-
 Can you use the data to predict whether a rental is an "Entire home" or a "Private room"" based on the other characteristics of that rental? 
 What variables in this data set do you think would be the most useful to you?  Try using the same variables as in the last exploration (including price) to build a model? Which variables are the most important?  The least important?  Does this surprise you?  Are there any variables that amount to just 'noise' in this analysis?  How reliable do you think your model is?  **Do you think this same model would work in other regions of the world? Why or why not? Once you have a model working on your chosen city, try your model on a different city and see how it performs.**  It would also be wise in this case to split your data into a training set and a test set so that you can measure the performance of your model. 
 
@@ -436,8 +424,7 @@ text(t, use.n = TRUE)
 
 
 ### Exploration #8: 
-
-Can you use the data to predict which neighborhood a rental is in based on other characteristics in the data?  Pick three of four neighborhoods which contain "many" rentals and keep only data from these neighborhoods.  Can you build a model (maybe hierarchical clustering, k-means, k-nearest neighbors, support vector classifiers, or something else) which can predict which neighborhood you're in, based on certain *important* variables? Which variables do you think you should use?  Do you think using `latitude` and/or `longitude` is like cheating?    How well does your model work?
+Can you use the data to predict which neighborhood a rental is in based on other characteristics in the data?  Pick three or four neighborhoods which contain "many" rentals and keep only data from these neighborhoods.  Can you build a model (maybe hierarchical clustering, k-nearest neighbors, support vector classifiers, or something else) which can predict which neighborhood you're in, based on certain *important* variables? Which variables do you think you should use?  Do you think using `latitude` and/or `longitude` is like cheating?    How well does your model work?
 
 ```{r, eval = F, echo = F}
 
@@ -470,6 +457,6 @@ ggplot(clusters, aes(x = longitude, y = latitude, color = as.factor(Predict))) +
 ```
 
 ##Conclusions
-The Insideairbnb data set is robust enough that anyone with statistical training, no matter the sophistication, can ask meaningful and challenging questions.  In recent times the field of data science, along with the associated mathematical tools, has become a successful and popular way to analyze data sets of this type. If you want to learn morea bout exploring and using data for analysis and predictions there are starter courses on the web (e.g., Coursera and DataCamp) and many universities and colleges around the world are implementing Data Science programs.  Most importantly, as you may have found from the last three exercises, the level of mathematical sophistication associated with data analysis can be quite high, so if you are a student reading this article and you find the ideas interesting then we recommend taking courses in statistics, computer science and computational mathematics.
+The Insideairbnb data set is robust enough that anyone with statistical training, no matter the sophistication, can ask meaningful and challenging questions.  In recent times the field of data science, along with the associated mathematical tools, has become a successful and popular way to analyze data sets of this type. If you want to learn more about exploring and using data for analysis and predictions there are starter courses on the web (e.g., Coursera and DataCamp) and many universities and colleges around the world are implementing Data Science programs.  Most importantly, as you may have found from the last three exercises, the level of mathematical sophistication associated with data analysis can be quite high, so if you are a student reading this article and you find the ideas interesting then we recommend taking courses in statistics, computer science and computational mathematics.
 
-There are many data sets like Insiderairbnb available for free on the internet.  For example, the University of California, Irnive, hosts a collection of machine learning data sets that are at least as rich and interesting (archive.ics.uci.edu/ml/).  Ohter sites to look at when seeking include data.gov, kaggle.com, quandl.com, gapminder.org, flowingdata.com, and many others.  The world of data and data analysis is growing in importance socially and mathematicians and statisticians are uniquely positioned with their training to approach these questions with proper skills and mindsets. 
+There are many data sets like Insiderairbnb available for free on the internet.  For example, the University of California, Irnive, hosts a collection of machine learning data sets that are at least as rich and interesting (archive.ics.uci.edu/ml/).  Other sites to look at when seeking data sets include data.gov, kaggle.com, quandl.com, gapminder.org, flowingdata.com, and many others.  The world of data and data analysis is growing in importance socially and mathematicians and statisticians are uniquely positioned with their training to approach these questions with proper skills and mindsets. 
