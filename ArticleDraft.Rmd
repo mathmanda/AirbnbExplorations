@@ -12,8 +12,7 @@ library(dplyr) # data wrangling
 library(cowplot) #plot grids
 library(knitr) # fancy tables
 library(GGally) # scatterplot matrices
-library(tree) # regression trees
-library(rpart) #classification trees
+library(rpart) #regression and classification trees
 library(rpart.plot) #plots of classification trees
 library(car) # marginal model plots 
 
@@ -31,7 +30,7 @@ showcode<-F
 
 
 According to 
-Jonathan Rosenberg, adviser to Larry Page and former SVP of products at Google, 
+Jonathan Rosenberg, <!--adviser to Larry Page and--> former SVP of products at Google, 
 "Data is the sword of the 21st century, those who weild it well, the samurai."
 The world of data and data analysis is growing in importance, and those with the interest and appropriate skillset are uniquely positioned to solve interesting problems and answer vital questions. 
 
@@ -377,25 +376,24 @@ ggplot(seattle2, aes(x = fitted(m2), y = rstandard(m2))) + geom_point(shape = 1)
 #==================Use A Regression Tree=====================
 
 #Produces a regression tree:
-t<-tree(price~ accommodates+beds+bathrooms +guests_included+review_scores_rating+BT+UD, data = seattle1 )
+t<-rpart(price~ accommodates+beds+bathrooms +guests_included+review_scores_rating+BT+UD, data = seattle1 )
 t
-plot(t)
-text(t) 
+rpart.plot(t)
 
 #It appears that the most important variable in the data is 'accomodates'.  
 #If you just want to split the data into two groups, you should look to
 # see if the rental accomodates 5 or more people.  
-#     If so, the average price would be $223, 
-#     If not the average price would be $102.  
+#     If so, the average price would be $227, 
+#     If not the average price would be $104.  
 
 #For the rentals which accomodate less than 5 people, 
 # the next break occurs depending on 
-#    if he rental accomodates three or four people (average price $128.10) 
-#    or not (average price $85.51). 
+#    if the rental accomodates four people (average price $140) 
+#    or not (average price $91). 
 
 #The next break occurs in the rentals that accommodate 5 or more people: 
-#     rentals with two or fewer bathrooms (average price $188) 
-#     or more than two (average price $326).
+#     rentals with two or fewer bathrooms (average price $192) 
+#     or more than two (average price $324).
 
 #We can keep following the 'breaks' in this regression tree until a good 'cut-off point'.  Finding the right cut-off point is an interesting problem which you should learn more about.  
 # Further Questions: 
@@ -522,16 +520,17 @@ ggplot(clusters, aes(x = longitude, y = latitude, color = as.factor(Predict))) +
 # - Latitude and Longitude get almost ignored when any other variable is tossed into the model.  Is this because the variability in lat/long is so small compared to other variables? If so, can you think of a way to compat that? 
 
 #Let's try using only lat/long, and trying to decide what the optimal number of clusters is: 
-wcc<-NULL
+wss<-NULL
 for(i in 2:10){
-  wcc<-c(wcc,sum(kmeans(clusters[,7:8],i)$withinss))	
-}
-plot(seq(2,10),wcc,type="b",pch=1,xlab="# of Clusters",
-     ylab="Within Sum--Squares")
-#In the 'elbow plot' above, we look for places where the slope changes drastically
+  wss<-c(wss,sum(kmeans(clusters[,7:8],i)$withinss))
+               }
+df<-data.frame(x = 2:10, y = wss)
+ggplot(df, aes(x = x, y = y)) + geom_line() + geom_point(shape = 7)+
+  xlab('# of Clusters') + ylab('Within Sum of Squares') + ggtitle('Elbow Plot')
+#In the 'elbow plot' above, we look for places where the slope changes drastically (elbows!)
 
 #Suppose you choose 4 clusters: 
-km<-kmeans(clusters[,7:8],4)
+km<-kmeans(clusters[,7:8],5)
 clusters<-clusters %>% mutate(Predict = km$cluster)
 ggplot(clusters, aes(x = longitude, y = latitude, color = as.factor(Predict))) + 
   geom_point()
