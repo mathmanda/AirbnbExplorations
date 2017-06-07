@@ -30,12 +30,12 @@ showcode<-F
 
 
 According to 
-Jonathan Rosenberg, <!--adviser to Larry Page and--> former SVP of products at Google, 
-"Data is the sword of the 21st century, those who weild it well, the samurai."
+Jonathan Rosenberg, <!--adviser to Larry Page and--> former Senior Vice President of products at Google, 
+"[d]ata is the sword of the 21st century, those who wield it well, the samurai."
 The world of data and data analysis is growing in importance, and those with the interest and appropriate skillset are uniquely positioned to solve interesting problems and answer vital questions. 
 
 In this article we highlight one freely-available, rich and complex data set which you might use to try out asking and answering data-driven questions. 
-What follows are a collection of explorations that you can try out along with us.  After each exploration we’ll give some of our own thoughts, discussion, and visualization.  We encourage the reader to head over to insideairbnb.com, find some interesting data, and start exploring.
+<!--What follows are -->We propose a collection of explorations that you can try out along with us.  After each exploration we’ll give some of our own thoughts, discussion, and visualization.  We encourage the reader to head over to insideairbnb.com, find some interesting data, and start exploring.
 
 
 ## Airbnb
@@ -45,21 +45,21 @@ As Airbnb has grown in popularity, a wealth of data has been accumulated about m
 
 
 ### Exploration #1: 
-Go to insideairbnb.com now and find a data set for the city of your choice.  Spend a few minutes exploring the data set and propose several questions.  When you press “Get the Data” on insideairbnb.com and find your city you will see a link “see data visually here”.  Spend some time exploring their visual aids.
+Go to insideairbnb.com now and find a data set for the city of your choice.  When you press “Get the Data” on insideairbnb.com and find your city you will see a link “see data visually here”.  Spend some time exploring their visual aids, exploring the data set and proposing several questions that can be answered from the data.  
 
 ![](SeattlePic.png)
 
 We are located somewhat near Seattle, so, for our discussions, we’ll use the Seattle data.  You are welcome to use whichever data set you find most interesting.  The graphical visualization tool allows you to see several descriptive statistics for your chosen city, animate through the frequency and location of reviews, see top rated hosts, and much more.
    
 ## Initial Exploratory Data Analysis
-<!--As a way to motivate statistical thinking and exploration on these large Airbnb data sets--> Let’s explore some questions related to your particular city (These explorations are meant to increase in difficulty as you work through them).  
+<!--As a way to motivate statistical thinking and exploration on these large Airbnb data sets--> Let’s explore some questions related to your particular city<!-- (these explorations are meant to increase in difficulty as you work through them)-->.  
 
 
 
 ### Exploration #2: 
-You’re trying to budget your travel money.  Give a *pracical* estimate for the daily prices of an Airbnb rentals in a particular neighborhood.  <!-- In what range of daily prices would you expect the average daily price for a private room at an Airbnb in a particular neighborhood to land?  **This data isn't normally distributed, so we need to be careful giving confidence intervals for single instances...** -->
+You’re trying to budget your travel money.  Give a *pracical* estimate for the daily prices of Airbnb rentals in a particular neighborhood.  <!-- In what range of daily prices would you expect the average daily price for a private room at an Airbnb in a particular neighborhood to land?  **This data isn't normally distributed, so we need to be careful giving confidence intervals for single instances...** -->
 
-**Discussion:** There is a beautiful beach on the Puget Sound in the Alki neighborhood of Seattle.  Let's filter the data to explore the prices of rentals from the Alki beach area.  We'll start with some basic descriptive statistics: the average rental price there is $172 but the standard deviation is $97!  The question in this exploration is best answered with a range of prices, and, based on the rather large standard deviation, the estimate will have a rather large range as well.  If this data were normally distributed we would expect *most* of the rentals (~68% of them) to be withing one standard deviation of the mean: between $75 and $269. <!--We expect the price for a rental in the Alkai neighborhood to be somewhere between $140 and $201.  In fact, a 95% confidence interval for the average price in this neighborhood is between $8 and $355!-->  The large variance in the prices leads us to believe that there is more going on here.  Let's create a data visualization to investigate further: 
+**Discussion:** There is a beautiful beach on the Puget Sound in the Alki neighborhood of Seattle.  Let's filter the data to explore the prices of rentals from the Alki beach area.  We'll start with some basic descriptive statistics: the average rental price in the Alki neighborhood is $172 but the standard deviation is $97!  The question in this exploration is best answered with a range of prices, and, based on the <!--rather--> large standard deviation, the estimate will likely have a rather large range<!-- as well-->.  If this data were normally distributed we would expect *most* of the rentals (~68% of them) to be withing one standard deviation of the mean: between $75 and $269. <!--We expect the price for a rental in the Alkai neighborhood to be somewhere between $140 and $201.  In fact, a 95% confidence interval for the average price in this neighborhood is between $8 and $355!-->  The large variance in the prices leads us to believe that there is more going on here.  Let's create a data visualization to investigate further: 
 
 ```{r, echo = showcode,fig.height = 2,fig.width = 5}
 #First we filter our data so that only includes the neighbourhood we care about: 
@@ -80,10 +80,10 @@ ggplot(seattle1, aes(x = 'Alki', y = price)) + geom_violin(fill = 'cyan')+
 The plot above is called a violin plot.  The curved shape tells us where 'clusters' of the data are located, while the boxplot tells us where the median and quartiles are.  We observe that this data does *not* appear to be normally distributed. In fact, a relatively low concentration of the rentals in the Alki neighborhood are near the mean price; many are between $40 and $100 away from the 'center'.  You may want to investigate the types of rentals in this data, or perhaps, their distance from the coastline to figure out what is creating this interesting shape. In addition, if we want to use prices in this neighborhood as part of some further analysis, we might consider performing a variable transformation.  Since the prices here are all greater than zero, bimodal, and fairly "right skewed" a square root or log transformation might prove useful for further analysis.
 
 ### Exploration #3:  
-Do you wonder if hosts with cleaner rentals charge more?  Here is a more specific question:  is there a significant difference between the daily price of the *cleanest* rentals verus the *least clean* rentals?
+Do you wonder if hosts with cleaner rentals charge more?  More specifically, <!--Here is a more specific question:  -->is there a significant difference between the daily price of the *cleanest* rentals verus the *least clean* rentals?
 
 **Discussion:** 
-The first order of business in this exploration is to decide what *cleanest and *least clean* mean to us.  The cleanliness rating scale goes from 0 to 10, but we shouldn't assume that cleanliness ratings are evenly distributed among these numbers, or even that the numbers 0-10 represent a linear progression of cleanliness.  In fact, many travelers might feel guilty giving a low cleanliness rating, so we may expect the ratings to be artificially inflated. Having learned from our last exploration, this time let's look at a visualization of the data first.  How about a scatterplot of cleanliness rating versus price?  
+The first order of business in this exploration is to decide what *cleanest* and *least clean* mean to us.  The cleanliness rating scale goes from 0 to 10, but we shouldn't assume that cleanliness ratings are evenly distributed among these numbers, or even that the numbers 0-10 represent a linear progression of cleanliness.  In fact, many travelers might feel guilty giving a low cleanliness rating, so we may expect the ratings to be artificially inflated. Having learned from our last exploration, this time let's look at a visualization of the data first.  How about a scatterplot of cleanliness rating versus price?  
 
 ```{r, echo = showcode, fig.height=2, fig.width = 5 }
 #For simplicity, let's eliminate all variables except cleanliness score and price
@@ -98,9 +98,7 @@ ggplot(seattle1, aes(x = review_scores_cleanliness, y = price)) + geom_point()+
   ggtitle('Scatterplot') + xlab('Cleanliness Score') + ylab('Price')
 ```
 
-One problem with this graphic is that the dots we've plotted are likely hiding the very information we want! <!--Some of the dots might represent only one observation, while some may have many rental observations which happen to have the same cleanliness review score and price as many others. --> We assume that every dot we see represents one rental, but there may be places in this scatterplot where many dots all landed on top of each other. 
-
-One option is to add a ‘jitter’ to our graphic, so that we can see all (or, at least, more) of our points, which will help us get a sense about where our clusters are. 
+One problem with this graphic is that the dots we've plotted are likely hiding the very information we want! <!--Some of the dots might represent only one observation, while some may have many rental observations which happen to have the same cleanliness review score and price as many others. --> We assume that every dot we see represents one rental, but there may be places in this scatterplot where many dots all landed on top of each other. One option is to add a ‘jitter’ to our graphic, so that we can see all (or, at least, more) of our points, which will help us get a sense about where our clusters are. 
 
 
 ```{r, echo = showcode, fig.height=2.5 }
@@ -129,7 +127,7 @@ ggplot(seattle1, aes(x = HiLo, y = price, fill = HiLo))+
   xlab('Cleanliness Rating') + ylab('Price')+ggtitle('Price on a Log Scale')
 ```
 
- We see that actually, the bulk of the rental prices for *both* High and Low ratings are centered near $100, but the high rentals have some 'outlier' observations with much higher prices.  On the whole, though, the average rental price in either category doesn't appear to be drastically different. If we conduct a statistical $t$-test on two means, we come to roughly the same conclusion (with a p-value of about 0.23), so there doesn't appear to be strong evidence of a difference in price between the two groups.  <!--At least we know that if we stay at an Airbnb rental with a higher cleanliness rating we aren’t likely being charged more.  -->
+We see that actually, the bulk of the rental prices for *both* High and Low ratings are centered near $100, but the high rentals have some 'outlier' observations with much higher prices.  On the whole, though, the average rental price in either category doesn't appear to be drastically different. If we conduct a statistical $t$-test on two means, we come to roughly the same conclusion (with a p-value of about 0.23), so there doesn't appear to be strong evidence of a difference in price between the two groups.  <!--At least we know that if we stay at an Airbnb rental with a higher cleanliness rating we aren’t likely being charged more.  -->
 
 ```{r, eval = F, echo = showcode}
 #Let's look at a few descriptive statistics for our data: 
@@ -164,7 +162,7 @@ ggplot(seattle1, aes(x = neighbourhood_cleansed, fill = cancellation_policy)) +
   ggtitle('Cancellation Policy in Two Neighborhoods')
 ```
 
-The visualization above shows us the distribution of cancellation policies in the two neighborhoods, and a statistical test on the difference of the  proportions of *strict* policies in each neighborhood gives us a p-value much less than .01, and we  conclude that there is evidence to suggest that rentals in Belltown have a much stricter cancellation policy than those in Alki.  The safe bet seems to be Alki, but if we want to spend our social time in downtown we now need to consider the transportation costs.
+The visualization above shows us the distribution of cancellation policies in the two neighborhoods, and a statistical test on the difference of the  proportions of *strict* policies in each neighborhood gives us a p-value much less than .01, and we  conclude that there is evidence to suggest that rentals in Belltown have a much stricter cancellation policy than those in Alki.  The safe bet seems to be Alki, but if we want to spend our social time in downtown, near Belltown, we now need to consider the transportation costs.
 
 ```{r, echo = showcode, eval = F}
 #Descriptive statistics: 
@@ -186,7 +184,7 @@ phatdiff = p1hat - p2hat
 ppooled = (x1+x2)/(n1+n2)
 stderror = sqrt(ppooled*(1-ppooled)*(1/n1+1/n2))
 tstat = phatdiff/stderror
-pvaue<- 2*pnorm(tstat)
+pvalue<- 2*pnorm(tstat)
 
 
 #Nonparametric (Chi-Squared-test)
@@ -204,7 +202,7 @@ Now I'm considering inviting some friends on my trip, but first I want to know: 
 Let's start with a visualization of our data points in a (jittered) scatterplot and a contour plot showing which combinations of number of beds and rental price occur most frequently.
 
 ```{r,echo = showcode, fig.height = 2.5,message = F, warnings = FALSE}
-#Let's 
+# Let's 
 # - eliminate all variables except price and # of beds
 # - eliminate missing data (... but worry about what missing data means...)
 seattle1<-seattle %>% 
@@ -262,7 +260,6 @@ The question in Exploration #2 really asks to compare the mean daily prices of r
 
 
 ## Moving Beyond the Basics 
-
 In this section we pose more questions and leave the investigations open to you. If you would like to see how we answered these questions wth the Seattle data, you can visit our workfile at mathquest.carroll.edu/AirbnbExplorations/.  Several of these exercises suggest more advanced techniques, such as multiple regression, logistic regression, or machine learning techniques to answer.  A good idea for each of the following explorations would be to split your data into a training and a test set so that you can test your predictions on data that your model has not seen.  
 
 As you work on these explorations consider the following questions: 
@@ -277,7 +274,7 @@ As you work on these explorations consider the following questions:
 
 ### Exploration #6: 
 
-What variables in this data set do you think would be the most useful in predicting the price of a particular rental?  For example, try `accommodates`, `beds`, `bathrooms`, `guests_included`, `review_scores_rating`, and dummy variables for various neighborhoods, and see if you can build a model (maybe a multiple regression, regression tree, or artificial neural network) that is good at predicting prices. 
+What variables in this data set do you think would be the most useful in predicting the price of a particular rental?  For example, try `accommodates`, `beds`, `bathrooms`, `guests_included`, `review_scores_rating`, and <!--dummy variables for -->various neighborhoods, and see if you can build a model (maybe a multiple regression, regression tree, or artificial neural network) that is good at predicting prices. 
 
 
 <!--… multiple regression … I think we should try to predict the price of a rental unit based on the variables accommodates + beds + bathrooms +guests_included+ review_scores_rating+QA(dummy variable for Queen Anne nbd) + BTown(dummy variable for Belltown nbd)+CH(dummy variable for Capitol Hill nbd).  We try to decide which variables should count for most.  I would like to include a scatterplot matrix here. -->
@@ -542,10 +539,10 @@ ggplot(clusters, aes(x = longitude, y = latitude, color = as.factor(Predict))) +
 
 ## Conclusions
 
-<!--The Insideairbnb data set is robust enough that anyone with statistical training, no matter the sophistication, can ask meaningful and challenging questions.-->  Recently, the field of data science has become a successful and popular way to analyze data like the one presented in this article. If you want to learn more about this field, there are starter courses on the web (e.g., Coursera and DataCamp) and many universities and colleges around the world are implementing data science programs.  As you may have discovered in the last three exercises, the level of mathematical sophistication associated with data analysis can be quite high, so if you find the data-driven problems interesting, then we recommend taking more courses in statistics, computer science and computational mathematics! For, as  Jennifer Pahlka, Founder and Executive Director for Code for America has said: "[o]ur ability to do great things with data will make a real difference in every aspect of our lives."
+<!--The Insideairbnb data set is robust enough that anyone with statistical training, no matter the sophistication, can ask meaningful and challenging questions.-->  Recently, the field of data science has become a successful and popular way to analyze data like the one presented in this article. If you want to learn more about this field, there are starter courses on the web (e.g., Coursera and DataCamp) and many universities and colleges around the world are implementing data science programs.  As you may have discovered in the last three exercises, the level of mathematical sophistication associated with data science can be quite high, so if you find the data-driven problems interesting, then we recommend taking more courses in statistics, computer science and computational mathematics! As Jennifer Pahlka, Founder and Executive Director for Code for America, has said: "[o]ur ability to do great things with data will make a real difference in every aspect of our lives."
 
 
-Many data sets like the one we've considered here are available for free online.  
+Many data sets like the one we've considered in this article are available for free online.  
 For example, some of our favorite places to find interesting (and real) data are 
 
   * data.gov
@@ -555,5 +552,6 @@ For example, some of our favorite places to find interesting (and real) data are
   * gapminder.org
   * flowingdata.com
 
+This work was funded by a grant from the the W.M. Keck Foundation.
 <!--For example, the University of California, Irnive, hosts a collection of machine learning data sets that are at least as rich and interesting (archive.ics.uci.edu/ml/).  Other sites to look at when seeking data sets include data.gov, kaggle.com, quandl.com, gapminder.org, flowingdata.com, and many others.  -->
 
