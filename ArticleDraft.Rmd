@@ -276,7 +276,7 @@ As you work on these explorations consider the following questions:
   * Do you think that the variables should be transformed in any way? 
   * Do you think any additional features should be included in your data (e.g. the square of a feature, the product of two features, etc)?
 
-###Exploration #6: 
+### Exploration #6: 
 
 What variables in this data set do you think would be the most useful in predicting the price of a particular rental?  For example, try `accommodates`, `beds`, `bathrooms`, `guests_included`, `review_scores_rating`, and dummy variables for various neighborhoods, and see if you can build a model (maybe a multiple regression, regression tree, or artificial neural network) that is good at predicting prices. 
 
@@ -541,7 +541,7 @@ ggplot(clusters, aes(x = longitude, y = latitude, color = as.factor(Predict))) +
 
 ```
 
-##Conclusions
+## Conclusions
 
 <!--The Insideairbnb data set is robust enough that anyone with statistical training, no matter the sophistication, can ask meaningful and challenging questions.-->  Recently, the field of data science has become a successful and popular way to analyze data like the one presented in this article. If you want to learn more about this field, there are starter courses on the web (e.g., Coursera and DataCamp) and many universities and colleges around the world are implementing data science programs.  As you may have discovered in the last three exercises, the level of mathematical sophistication associated with data analysis can be quite high, so if you find the data-driven problems interesting, then we recommend taking more courses in statistics, computer science and computational mathematics! For, as  Jennifer Pahlka, Founder and Executive Director for Code for America has said: "[o]ur ability to do great things with data will make a real difference in every aspect of our lives."
 
