@@ -61,7 +61,7 @@ You’re trying to budget your travel money.  Give a *pracical* estimate for the
 
 **Discussion:** There is a beautiful beach on the Puget Sound in the Alki neighborhood of Seattle.  Let's filter the data to explore the prices of rentals from the Alki beach area.  We'll start with some basic descriptive statistics: the average rental price in the Alki neighborhood is $172 but the standard deviation is $97!  The question in this exploration is best answered with a range of prices, and, based on the <!--rather--> large standard deviation, the estimate will likely have a rather large range<!-- as well-->.  If this data were normally distributed we would expect *most* of the rentals (~68% of them) to be withing one standard deviation of the mean: between $75 and $269. <!--We expect the price for a rental in the Alkai neighborhood to be somewhere between $140 and $201.  In fact, a 95% confidence interval for the average price in this neighborhood is between $8 and $355!-->  The large variance in the prices leads us to believe that there is more going on here.  Let's create a data visualization to investigate further: 
 
-```{r, echo = showcode,fig.height = 2,fig.width = 5}
+```{r, echo = showcode,fig.height = 2.5,fig.width = 5}
 #First we filter our data so that only includes the neighbourhood we care about: 
 seattle1<-seattle %>% filter(neighbourhood_cleansed == 'Alki')
 
@@ -70,8 +70,8 @@ m = mean(seattle1$price)
 s = sd(seattle1$price)
 
 #Create a boxplot + violin plot to see what prices happen most: 
-ggplot(seattle1, aes(x = 'Alki', y = price)) + geom_violin(fill = 'cyan')+
-  geom_boxplot(width = .3, fill = 'Lightblue')+coord_flip() + xlab('') + ylab('Price')+
+ggplot(seattle1, aes(x = 'Alki', y = price)) + geom_violin(fill = 'mediumorchid3')+
+  geom_boxplot(width = .3, fill = 'mediumorchid1')+coord_flip() + xlab('') + ylab('Price')+
   ggtitle('Distribution of Prices in the Alki Neighborhood')
 ```
 
