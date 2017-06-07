@@ -45,7 +45,7 @@ As Airbnb has grown in popularity, a wealth of data has been accumulated about m
 
 
 ### Exploration #1: 
-Go to insideairbnb.com now and find a data set for the city of your choice.  When you press “Get the Data” on insideairbnb.com and find your city you will see a link “see data visually here”.  Spend some time exploring their visual aids, exploring the data set and proposing several questions that can be answered from the data.  
+Go to insideairbnb.com now and find a data set for the city of your choice.  When you press “Get the Data” on insideairbnb.com and find your city you will see a link “see data visually here”.  Spend some time exploring their visual aids, exploring the data set, and proposing several questions that can be answered from the data.  
 
 ![](SeattlePic.png)
 
@@ -539,7 +539,7 @@ ggplot(clusters, aes(x = longitude, y = latitude, color = as.factor(Predict))) +
 
 ## Conclusions
 
-<!--The Insideairbnb data set is robust enough that anyone with statistical training, no matter the sophistication, can ask meaningful and challenging questions.-->  Recently, the field of data science has become a successful and popular way to analyze data like the one presented in this article. If you want to learn more about this field, there are starter courses on the web (e.g., Coursera and DataCamp) and many universities and colleges around the world are implementing data science programs.  As you may have discovered in the last three exercises, the level of mathematical sophistication associated with data science can be quite high, so if you find the data-driven problems interesting, then we recommend taking more courses in statistics, computer science and computational mathematics! As Jennifer Pahlka, Founder and Executive Director for Code for America, has said: "[o]ur ability to do great things with data will make a real difference in every aspect of our lives."
+<!--The Insideairbnb data set is robust enough that anyone with statistical training, no matter the sophistication, can ask meaningful and challenging questions.-->  Recently, the field of data science has become a successful and popular way to analyze data like the one presented in this article. If you want to learn more about this field, there are starter courses on the web (e.g., Coursera and DataCamp), and many universities and colleges around the world are implementing data science programs.  As you may have discovered in the last three exercises, the level of mathematical sophistication associated with data science can be quite high, so if you find the data-driven problems interesting, then we recommend taking more courses in statistics, computer science and computational mathematics! As Jennifer Pahlka, Founder and Executive Director for Code for America, has said: "[o]ur ability to do great things with data will make a real difference in every aspect of our lives."
 
 
 Many data sets like the one we've considered in this article are available for free online.  
