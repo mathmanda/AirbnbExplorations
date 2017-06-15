@@ -70,7 +70,7 @@ m = mean(seattle1$price)
 s = sd(seattle1$price)
 
 #Create a boxplot + violin plot to see what prices happen most: 
-ggplot(seattle1, aes(x = 'Alki', y = price)) + geom_violin(fill = 'mediumorchid3')+
+ggplot(seattle1, aes(x = '', y = price)) + geom_violin(fill = 'mediumorchid3')+
   geom_boxplot(width = .3, fill = 'mediumorchid1')+coord_flip() + xlab('') + ylab('Price')+
   ggtitle('Distribution of Prices in the Alki Neighborhood')
 ```
@@ -83,7 +83,7 @@ The plot above is called a violin plot.  The curved shape tells us where 'cluste
 Do you wonder if hosts with cleaner rentals charge more?  More specifically, <!--Here is a more specific question:  -->is there a significant difference between the daily price of the *cleanest* rentals verus the *least clean* rentals?
 
 **Discussion:** 
-The first order of business in this exploration is to decide what *cleanest* and *least clean* mean to us.  The cleanliness rating scale goes from 0 to 10, but we shouldn't assume that cleanliness ratings are evenly distributed among these numbers, or even that the numbers 0-10 represent a linear progression of cleanliness.  In fact, many travelers might feel guilty giving a low cleanliness rating, so we may expect the ratings to be artificially inflated. Having learned from our last exploration, this time let's look at a visualization of the data first.  How about a scatterplot of cleanliness rating versus price?  
+The first order of business in this exploration is to decide what *cleanest* and *least clean* mean to us.  The cleanliness rating scale goes from 0 to 10, but we shouldn't assume that cleanliness ratings are evenly distributed among these numbers, or even that the numbers 0-10 represent a linear progression of cleanliness.  In fact, many travelers might feel guilty giving a low cleanliness rating, so we may expect the ratings to be artificially inflated. Having learned from our last exploration, this time let's look at a visualization of the data first.  <!--How about a scatterplot of cleanliness rating versus price?-->  How about we start with a bar graph of the counts of the cleanliness scores.
 
 ```{r, echo = showcode, fig.height=2, fig.width = 5 }
 #For simplicity, let's eliminate all variables except cleanliness score and price
@@ -94,11 +94,19 @@ seattle1<- seattle %>%
   filter(review_scores_cleanliness != 'N/A')
 
 #Make a scatterplot of cleanliness rating versus price: 
-ggplot(seattle1, aes(x = review_scores_cleanliness, y = price)) + geom_point()+
-  ggtitle('Scatterplot') + xlab('Cleanliness Score') + ylab('Price')
+# ggplot(seattle1, aes(x = review_scores_cleanliness, y = price)) + geom_point()+
+#   ggtitle('Scatterplot') + xlab('Cleanliness Score') + ylab('Price')
+
+ggplot(seattle1, aes(x= review_scores_cleanliness))+
+  ggtitle('Bar Graph of Cleanliness Ratings') +
+  geom_bar(width=0.9, fill="steelblue") + 
+  xlab('Cleanliness Score')
 ```
 
-One problem with this graphic is that the dots we've plotted are likely hiding the very information we want! <!--Some of the dots might represent only one observation, while some may have many rental observations which happen to have the same cleanliness review score and price as many others. --> We assume that every dot we see represents one rental, but there may be places in this scatterplot where many dots all landed on top of each other. One option is to add a ‘jitter’ to our graphic, so that we can see all (or, at least, more) of our points, which will help us get a sense about where our clusters are. 
+It appears that the number of ratings drops off drastically below a cleanliness score of 8.  Hence, we conjecture that the ratings between 0 and 7 represent the people that are truly unhappy with the cleanliness of the rental.  <!--
+One problem with this graphic is that the dots we've plotted are likely hiding the very information we want!  We assume that every dot we see represents one rental, but there may be places in this scatterplot where many dots all landed on top of each other.-->
+To include the price into the discussion we now consider a scatter plot of cleanliness score versus the price.  An immediate concern, however, is that many of the points will undoubtedly overlap and make the plot difficult to read.  
+One option is to add a ‘jitter’ to our graphic, so that we can see all (or, at least, more) of our points, which will help us get a sense about where our clusters are. 
 
 
 ```{r, echo = showcode, fig.height=2.5 }
@@ -110,7 +118,7 @@ ggplot(seattle1, aes(x = review_scores_cleanliness, y = price)) +
   ggtitle('Jittered Scatterplot')+ xlab('Cleanliness Score')+ ylab('Price')
 ```
 
-The jittered scatterplot suggests that 7 might be a good *cut-off* value for separating clean and unclean rentals. Notice that the sample sizes are wildly different: 80 rentals with lower cleanliness ratings and 3,165 with higher ratings.  <!--Perhaps people are just too nice in their ratings or perhaps the Airbnb properties in Seattle are clean!--> It *looks* like the rentals rated higher for cleanliness get better prices, perhaps with a few outliers. However, our scatterplot dots are still so clustered that it makes it hard for us to see what's going on. Let's try <!--one more data visualization.  In the last exploration we looked at a violin plot, and it seemed useful; this time let's look at--> a side-by-side violin plot. In this case, we've added a log-scale to the price variable, to make the shapes easier to see. 
+<!--The jittered scatterplot suggests that 7 might be a good *cut-off* value for separating clean and unclean rentals. -->Notice that the sample sizes are wildly different: 80 rentals with lower cleanliness ratings and 3,165 with higher ratings.  <!--Perhaps people are just too nice in their ratings or perhaps the Airbnb properties in Seattle are clean!--> It *looks* like the rentals rated higher for cleanliness get better prices, perhaps with a few outliers. However, our scatterplot dots are still so clustered that it makes it hard for us to see what's going on. Let's try <!--one more data visualization.  In the last exploration we looked at a violin plot, and it seemed useful; this time let's look at--> a side-by-side violin plot. In this case, we've added a log-scale to the price variable, to make the shapes easier to see. 
 
 
 
